@@ -59,7 +59,7 @@ Min. 1st Qu.  Median    Mean 3rd Qu.    Max.
 
 ## Load [smrtlink/8.0.0.80529](https://www.pacb.com/wp-content/uploads/SMRT-Link-User-Guide-v8.0.pdf) to run `ccs 4.0.0`:
 
-The [circular concensus sequencing](https://github.com/PacificBiosciences/ccs) or ccs considers the subreads of ZMW to correct PacBio reads. The PacBio reads must be HIFI.
+The [circular concensus sequencing](https://github.com/PacificBiosciences/ccs) or ccs considers the subreads of ZMW to correct PacBio reads. The PacBio reads must be [HIFI](https://www.pacb.com/smrt-science/smrt-sequencing/smrt-sequencing-modes/).
 
 ```
 nohup ccs --reportFile=PACBIO_FILE.report \
@@ -72,9 +72,7 @@ CCS.bam &
 
 >"Canu specializes in assembling PacBio or Oxford Nanopore sequences. Canu operates in three phases: correction, trimming and assembly. The correction phase will improve the accuracy of bases in reads. The trimming phase will trim reads to the portion that appears to be high-quality sequence, removing suspicious regions such as remaining SMRTbell adapter. The assembly phase will order the reads into contigs, generate consensus sequences and create graphs of alternate paths.
 
->For eukaryotic genomes, coverage more than 20x is enough to outperform current hybrid methods, however, between 30x and 60x coverage is the recommended minimum. More coverage will let Canu use longer reads for assembly, which will result in better assemblies."
-
-First, we will need to convert the _.bam_ files into _.fq_ files. To that, I will load module `samtools/1.9`
+First, convert the _.bam_ files into _.fq_ files. To that, I will load module `samtools/1.9`
 
 `samtools fastq /path/to/CCS.bam > CCS.fq`
 
@@ -84,12 +82,12 @@ nohup canu -p canu_assemble -d ../Canu genomeSize=5.5m -pacbio-corrected path/to
 
 **Note:** Please change the genome size to the expected genome size of your genome.
 
-**You can use the [Bandage](https://rrwick.github.io/Bandage/) to visualize your Genome with the file canu_assemble.gfa**
+**You can use the [Bandage](https://rrwick.github.io/Bandage/) to visualize your Genome with the file canu_assemble.gfa.**
 
 
-## Using `arrow/2.3.3` to correct my data [more information](https://github.com/PacificBiosciences/GenomicConsensus):
+## Using `arrow/2.3.3` to correct the genome assemble [more information](https://github.com/PacificBiosciences/GenomicConsensus):
 
-First, we will use [`pbalign/0.4.1`](https://github.com/PacificBiosciences/pbalign) to aligned PacBio raw data to my contig:
+First, you will use [`pbalign/0.4.1`](https://github.com/PacificBiosciences/pbalign) to aligned PacBio raw data to my contig:
 
 ```
 pbalign /path/to/PACBIO_FILE.fofn \
@@ -131,10 +129,7 @@ hts_Stats -A -L GenomeHTSstats.log -f Genome.htstream
 
 ## Running `pilon` on _arrow_ corrected data
 
-First, I will need to align my Preprocessed Illumina reads against my corrected-contig.
-
-First, we will need to create an index file to the _.fasta_ document.
-
+First, you will need to align my Preprocessed Illumina reads against my corrected-contig. To that, you will need to create an index file to the _.fasta_ document.
 
 `bwa index canu_assemble-arrowcorr.fasta`
 
@@ -151,7 +146,7 @@ bwa mem canu_assemble-arrowcorr.fasta /path/to/HTStream/Genome.htstream_R1.fastq
 _obs: do not run this command with nohup, it will generate a bad **.sam** file._
 
 
-We need to convert tem _.sam_ file to its binary counterpart, _.bam_ format.
+You will need to convert tem _.sam_ file to its binary counterpart, _.bam_ format.
 
 `samtools view -S -b canu_assemble-arrowcorr-illumina-alig-single.sam > canu_assemble-arrowcorr-illumina-alig-single.bam`
 
@@ -164,8 +159,7 @@ To report some stats of our alignment:
 
 `samtools flagstat canu_assemble-arrowcorr-illumina-alig-single.bam`
 
-
-We need then to sort the files:
+You will need then to sort the files:
 
 `
 samtools sort canu_assemble-arrowcorr-illumina-alig-single.bam -o canu_assemble-arrowcorr-illumina-alig-single-sorted.bam
@@ -175,7 +169,7 @@ samtools sort canu_assemble-arrowcorr-illumina-alig-single.bam -o canu_assemble-
 samtools sort canu_assemble-arrowcorr-illumina-alig-paired.bam -o canu_assemble-arrowcorr-illumina-alig-paired-sorted.bam
 `
 
-Then we do the index of these files.
+Then you will need to do the index of these files.
 
 `
 samtools index canu_assemble-arrowcorr-illumina-alig-single-sorted.bam
