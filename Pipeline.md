@@ -1,8 +1,6 @@
 # Assembly of Bacterial genome with PacBio and Illumina data
 
-This is a pipeline to assemble Bacterial Genome with PacBio and Illumina data. 
-
-This pipeline was used to assemble the genome of [_Bacillus_ sp. RZ2MS9](https://www.ncbi.nlm.nih.gov/nuccore/CP049978), so you will see some examples using this genome data thoughout this pipeline.
+This is a pipeline to assemble a Bacterial Genome using PacBio and Illumina data. Here we describe the steps used to assemble the genome of [_Bacillus_ sp. RZ2MS9](https://www.ncbi.nlm.nih.gov/nuccore/CP049978), so you will see examples using this genome data thoughout this pipeline.
 
 If you find this pipeline usefull, please cite [this article](XXX).
 
@@ -57,7 +55,7 @@ Min. 1st Qu.  Median    Mean 3rd Qu.    Max.
 
 
 
-## Load [smrtlink/8.0.0.80529](https://www.pacb.com/wp-content/uploads/SMRT-Link-User-Guide-v8.0.pdf) to run `ccs 4.0.0`:
+## Load [smrtlink/8.0.0.80529](https://www.pacb.com/wp-content/uploads/SMRT-Link-User-Guide-v8.0.pdf) to run `ccs 4.0.0`
 
 The [circular concensus sequencing](https://github.com/PacificBiosciences/ccs) or ccs considers the subreads of ZMW to correct PacBio reads. The PacBio reads must be [HIFI](https://www.pacb.com/smrt-science/smrt-sequencing/smrt-sequencing-modes/).
 
@@ -95,7 +93,7 @@ pbalign /path/to/PACBIO_FILE.fofn \
           canu_assemble-aligned-raw-data.bam 
 ```
 
-**Note:** What is a _.fofn_ file [here](https://pb-falcon.readthedocs.io/en/latest/tutorial.html#create-fofn).
+**Note:** Information about a _.fofn_ file can be find [here](https://pb-falcon.readthedocs.io/en/latest/tutorial.html#create-fofn).
 
 `samtools flagstat canu_assemble-aligned-raw-data.bam`
 
@@ -114,7 +112,7 @@ nohup variantCaller /path/to/canu_assemble-aligned-raw-data.bam --algorithm=arro
 
 ## Correting Illumina reads with `htstream/1.1.0`
 
-This pipeline is from [HTStream RNA preprocessing] (https://github.com/ucdavis-bioinformatics-training/HTStream_Training/blob/master/preproc.md) from Bioinformatics Core from UC Davis, with some modifications.
+This pipeline is from [HTStream RNA preprocessing] (https://github.com/ucdavis-bioinformatics-training/HTStream_Training/blob/master/preproc.md) from Bioinformatics Core from UC Davis, with modifications.
 
 ```
 hts_Stats -L GenomeHTSstats.log -1 /path/to/Illumina/Genome_S1_L001_R1_001.fastq.gz -2 /path/to/Illumina/Genome_S1_L001_R2_001.fastq.gz | \
@@ -146,7 +144,7 @@ bwa mem canu_assemble-arrowcorr.fasta /path/to/HTStream/Genome.htstream_R1.fastq
 _obs: do not run this command with nohup, it will generate a bad **.sam** file._
 
 
-You will need to convert tem _.sam_ file to its binary counterpart, _.bam_ format.
+You will need to convert the _.sam_ file to its binary counterpart, _.bam_ format.
 
 `samtools view -S -b canu_assemble-arrowcorr-illumina-alig-single.sam > canu_assemble-arrowcorr-illumina-alig-single.bam`
 
@@ -169,7 +167,7 @@ samtools sort canu_assemble-arrowcorr-illumina-alig-single.bam -o canu_assemble-
 samtools sort canu_assemble-arrowcorr-illumina-alig-paired.bam -o canu_assemble-arrowcorr-illumina-alig-paired-sorted.bam
 `
 
-Then you will need to do the index of these files.
+Then you will need to index these files.
 
 `
 samtools index canu_assemble-arrowcorr-illumina-alig-single-sorted.bam
@@ -181,7 +179,7 @@ samtools index canu_assemble-arrowcorr-illumina-alig-paired-sorted.bam
 
 ### Runing `pilon/1.23` on arrow previous corrected data.
 
-Using [pilon](https://github.com/broadinstitute/pilon/wiki) to polish the contig.
+Here you can use [pilon](https://github.com/broadinstitute/pilon/wiki) to polish the contig.
 
 ```
 nohup pilon --genome /path/to/canu_assemble-arrowcorr.fasta \
@@ -195,7 +193,7 @@ nohup pilon --genome /path/to/canu_assemble-arrowcorr.fasta \
 
 1. Since Bacterial Genome is circular, check if there is any overlap at the beginning and end of the Genome.
 
-2. Also, if you a use [Blast](https://blast.ncbi.nlm.nih.gov/Blast.cgi), you can see if your Genome is on the expected DNA frame (5'--- 3').
+2. Also, using [Blast](https://blast.ncbi.nlm.nih.gov/Blast.cgi), you can verify if your Genome is on the expected DNA frame (5'--- 3').
 
 3. **Looking for the chromosomal replication initiator protein DnaA**. This will be the first base of your contig, if you are working with **Bacteria**. This is a gene of 1341 bp.
 To find where DnaA is on your genome, you can use as reference the [chromosomal replication initiator protein DnaA](https://www.ncbi.nlm.nih.gov/nuccore/CP049978.1?from=1&to=1341) of _Bacillus_ sp. RZ2MS9.
@@ -267,7 +265,7 @@ set_a_description      843381       5357194
 
 _Bacillus_ sp. RZ2MS9 contig has 5,357,194 bp.
 
-One can use [`bedtools getfasta`](https://bedtools.readthedocs.io/en/latest/content/tools/getfasta.html) to get the sections that one needs.
+One can use [`bedtools getfasta`](https://bedtools.readthedocs.io/en/latest/content/tools/getfasta.html) to get the initial and final sections according to the bed files.
 
 `
 bedtools getfasta -fi Final_Genome_trimmed_and_RC.fasta -bed position1.bed -fo Final_Genome_trimmed_and_RC_beg.fasta
@@ -291,7 +289,7 @@ grep -v ">" Final_Genome_trimmed_and_RC_end.fasta | wc | awk '{print $3-$1}'
 grep -v ">" Final_Genome_trimmed_and_RC.fasta | wc | awk '{print $3-$1}'
 5357194
 
-You can manually joined them.
+You can manually join them.
 
 grep -v ">" Final_Genome_trimmed_and_RC_total.fasta | wc | awk '{print $3-$1}'
 5357194
