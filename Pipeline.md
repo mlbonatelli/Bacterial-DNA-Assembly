@@ -2,7 +2,7 @@
 
 This is a pipeline to assemble a Bacterial Genome using PacBio and Illumina data. Here we describe the steps used to assemble the genome of [_Bacillus_ sp. RZ2MS9](https://www.ncbi.nlm.nih.gov/nuccore/CP049978), so you will see examples using this genome data thoughout this pipeline.
 
-If you find this pipeline usefull, please cite [this article](XXX).
+If you find this pipeline usefull, please cite [this article](https://mra.asm.org/content/9/31/e00623-20.abstract).
 
 
 ## Use [bamutil/1.0.14](https://github.com/statgen/bamUtil) to run _stats_ on _.bam_ file generated from PacBio reads.
